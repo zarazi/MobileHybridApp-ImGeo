@@ -86,13 +86,25 @@
 	    };
 
 	    app.makeFriendsList = function() {
+
+	    	var createShowFriendMapHandler = function(i) {
+	    		return function() {
+	    			currentFriendId = i;
+	    			$.mobile.changePage('#friendMap', {
+                		transition: 'slide'
+            		});
+	    		};
+
+	    	};
+
 	        $.get('friends.json', {}, function(res, code) {
 	            var ul = $('#friendsList');
 	            ul.empty();
 
 	            for(var i in res) {
-	                var url = 'friend.html?id=' + i;
-	                var a = $('<a>').attr('href', url).append(res[i].name);
+	                var a = $('<a>').append(res[i].name);
+	                a.bind('click', createShowFriendMapHandler(i));
+
 	                var li = $('<li>').append(a);
 	                ul.append(li);
 	            }
@@ -102,8 +114,7 @@
 	    };
 
 	    app.showFriendMap = function(page) {
-	        var url = page.data('url');
-	        var id = url.split('=')[1];
+	        id = currentFriendId;
 
 	        $.get('friends.json', {}, function(res, code) {
 
@@ -183,7 +194,7 @@
 
 	$('#friendMap').live('pagebeforeshow', function() {
 	    imGeo.showFriendMap($(this));
-	    $(this).page();
+	    // $(this).page();
 	});
 
 	$('#searchNow').live('click', function() {
